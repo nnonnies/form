@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฟอร์มสำรวจความพึงพอใจ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>แบบฟอร์มสำรวจความพึงพอใจ</h1>
+
+    <button id="new-survey-btn">สร้างแบบฟอร์มใหม่</button>
+
+    <div id="survey-form-container" class="hidden">
+        <h2>กรุณาให้คะแนนความพึงพอใจ</h2>
+        <form id="survey-form">
+            <table>
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>มากที่สุด</th>
+                        <th>มาก</th>
+                        <th>ปานกลาง</th>
+                        <th>น้อยที่สุด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            <button type="submit">ยืนยันข้อมูล</button>
+            <button type="button" id="cancel-btn">ยกเลิก</button>
+        </form>
+    </div>
+
+    <div id="results-container">
+        <h2>ข้อมูลที่บันทึกไว้</h2>
+        <button id="clear-all-btn" class="danger">ล้างข้อมูลทั้งหมด</button> <table id="results-table">
+            <thead>
+                </thead>
+            <tbody id="results-tbody">
+                </tbody>
+        </table>
+        <p id="no-results-message" class="hidden">ยังไม่มีข้อมูลที่บันทึกไว้</p> </div>
+
+    <div id="summary-container">
+        <h2>สรุปผลความพึงพอใจ</h2>
+        <p>จำนวนผู้ตอบแบบฟอร์มทั้งหมด: <span id="total-forms">0</span> คน</p>
+        <div id="summary-details">
+            </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

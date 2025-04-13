@@ -1,0 +1,200 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* ใช้ฟอนต์ระบบที่ทันสมัยขึ้น */
+    line-height: 1.6;
+    margin: 20px;
+    background-color: #f8f9fa; /* สีพื้นหลังอ่อนลง */
+    color: #212529; /* สีข้อความหลัก */
+}
+
+h1, h2 {
+    color: #343a40; /* สีหัวข้อเข้มขึ้น */
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin-top: 30px; /* เพิ่มระยะห่างด้านบนสำหรับหัวข้อรอง */
+}
+
+
+button {
+    padding: 10px 20px; /* เพิ่ม padding ให้ปุ่มใหญ่ขึ้นเล็กน้อย */
+    background-color: #0d6efd; /* เปลี่ยนสีปุ่มหลักเป็นสีน้ำเงิน */
+    color: white;
+    border: none;
+    border-radius: 5px; /* เพิ่มความโค้งมน */
+    cursor: pointer;
+    margin: 5px;
+    font-size: 1em;
+    transition: background-color 0.2s ease-in-out; /* เพิ่ม animation */
+}
+
+button:hover {
+    background-color: #0b5ed7; /* สีเข้มขึ้นเมื่อ hover */
+}
+
+/* ปุ่มหลักสำหรับสร้างฟอร์ม */
+#new-survey-btn {
+    display: block;
+    margin: 0 auto 30px auto; /* จัดกลางและเพิ่มระยะห่างด้านล่าง */
+    background-color: #198754; /* สีเขียว */
+    min-width: 200px; /* กำหนดความกว้างขั้นต่ำ */
+}
+
+#new-survey-btn:hover {
+    background-color: #157347;
+}
+
+/* ปุ่มยกเลิก */
+#cancel-btn {
+    background-color: #6c757d; /* สีเทา */
+}
+#cancel-btn:hover {
+    background-color: #5c636a;
+}
+
+/* ปุ่มล้างข้อมูล (อันตราย) */
+button.danger {
+    background-color: #dc3545; /* สีแดง */
+}
+
+button.danger:hover {
+    background-color: #bb2d3b;
+}
+
+.hidden {
+    display: none;
+}
+
+#survey-form-container, #results-container, #summary-container {
+    background-color: #ffffff;
+    padding: 25px; /* เพิ่ม padding */
+    margin-bottom: 25px;
+    border-radius: 8px; /* เพิ่มความโค้งมน */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* เงาอ่อนๆ */
+    border: 1px solid #dee2e6; /* เพิ่มเส้นขอบบางๆ */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95em; /* ปรับขนาดฟอนต์ในตาราง */
+}
+
+th, td {
+    border: 1px solid #dee2e6; /* สีเส้นขอบอ่อนลง */
+    padding: 10px 12px; /* ปรับ padding ในเซลล์ */
+    text-align: left;
+    vertical-align: middle; /* จัดเนื้อหาให้อยู่กลางแนวตั้ง */
+}
+
+th {
+    background-color: #e9ecef; /* สีพื้นหลังหัวตาราง */
+    text-align: center;
+    font-weight: 600; /* ตัวหนาขึ้นเล็กน้อย */
+    white-space: nowrap; /* ไม่ให้หัวตารางตัดคำ */
+}
+
+/* จัดคอลัมน์เรตติ้งให้อยู่กลาง */
+#survey-form td:not(:first-child),
+#results-table td:not(:first-child) {
+    text-align: center;
+}
+
+/* คอลัมน์แรก (คำถาม/ลำดับ) */
+td:first-child {
+    width: 40%;
+}
+#results-table td:first-child {
+    width: auto; /* สำหรับคอลัมน์ลำดับในตารางผลลัพธ์ */
+    text-align: center;
+}
+
+
+input[type="radio"] {
+    margin: 0 5px;
+    cursor: pointer;
+    transform: scale(1.1); /* ขยาย radio button เล็กน้อย */
+}
+
+/* ส่วนสรุปผล */
+#summary-container p {
+    font-weight: 500; /* ตัวหนาเล็กน้อย */
+    font-size: 1.1em;
+    color: #495057;
+}
+
+#summary-details div {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #e9ecef; /* สีเส้นคั่น */
+    background-color: #f8f9fa; /* พื้นหลังอ่อนๆ */
+    border-radius: 4px;
+}
+#summary-details div:last-child {
+    border-bottom: none;
+}
+
+#summary-details strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #343a40;
+    font-weight: 600;
+}
+
+#summary-details span {
+    margin-right: 15px;
+    font-size: 0.95em;
+    display: inline-block; /* ให้เว้นบรรทัดได้ */
+    min-width: 130px; /* กำหนดความกว้างขั้นต่ำให้ดูเป็นระเบียบ */
+    padding: 2px 0;
+}
+
+/* จัดตำแหน่งปุ่มล้างข้อมูล */
+#results-container h2 {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 15px; /* ลดระยะห่างด้านล่างเมื่ออยู่บรรทัดเดียวกับปุ่ม */
+}
+#clear-all-btn {
+     vertical-align: middle; /* จัดให้อยู่กลางแนวตั้งกับ h2 */
+     margin-bottom: 15px;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+     td:first-child { width: auto; } /* ให้คำถามตัดคำได้ */
+     #results-table th, #results-table td { font-size: 0.9em; padding: 8px;} /* ลดขนาดฟอนต์และ padding ในตารางผลลัพธ์ */
+     #summary-details span { min-width: 110px; }
+}
+
+
+@media (max-width: 768px) {
+    body { margin: 15px; }
+    h1 { font-size: 1.8em; }
+    h2 { font-size: 1.3em; }
+    button { padding: 8px 15px; font-size: 0.95em;}
+    #new-survey-btn { min-width: 180px;}
+    th, td { padding: 8px; font-size: 0.9em; }
+    #results-table th, #results-table td { font-size: 0.85em; padding: 6px;}
+    #summary-details span { display: block; margin-right: 0; margin-bottom: 3px; min-width: auto;} /* ให้ span ใน summary แสดงเป็น block */
+}
+
+@media (max-width: 480px) {
+     h1 { font-size: 1.5em; }
+     h2 { font-size: 1.2em; }
+     th, td { padding: 6px; font-size: 0.85em; }
+     #survey-form td:first-child { font-weight: 500; } /* ทำให้ข้อความคำถามเข้มขึ้นเล็กน้อยบนมือถือ */
+     input[type="radio"] { transform: scale(1); } /* ขนาด radio ปกติบนมือถือ */
+     button { width: 100%; margin: 5px 0; } /* Stack buttons */
+     #new-survey-btn, #clear-all-btn { width: auto; display: inline-block; margin: 5px; } /* ไม่ให้ปุ่มหลักกับปุ่มล้างเต็มจอ */
+     #results-container h2, #clear-all-btn { display: block; width: 100%; text-align: center; margin: 10px 0; } /* จัดปุ่มล้างให้อยู่กลาง */
+     #results-table { font-size: 0.8em; } /* ลดขนาดฟอนต์ตารางผลลัพธ์อีก */
+}
