@@ -5,28 +5,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const surveyForm = document.getElementById('survey-form');
     const cancelBtn = document.getElementById('cancel-btn');
     const resultsTbody = document.getElementById('results-tbody');
-    const resultsTable = document.getElementById('results-table'); // Reference to the whole table
+    const resultsTable = document.getElementById('results-table');
     const resultsTableHead = resultsTable.querySelector('thead');
     const noResultsMessage = document.getElementById('no-results-message');
     const totalFormsSpan = document.getElementById('total-forms');
     const summaryDetailsDiv = document.getElementById('summary-details');
     const clearAllBtn = document.getElementById('clear-all-btn');
+    const seeMoreBtn = document.getElementById('seeMoreRecords'); // ปุ่ม More
+    const seeLessBtn = document.getElementById('seeLessRecords'); // ปุ่ม Less
+    const resultsContainer = document.getElementById('results-container'); // เพิ่มสำหรับ scroll
+    //-ตัวแปรสำหรับปุ่ม Print
+    const printSummaryBtn = document.getElementById('print-summary-btn');
+    // --- Configuration ---
+    const localStorageKey = 'surveySubmissions';
+    const rowsPerLoad = 5; // จำนวนแถวที่จะแสดง/ซ่อน ต่อการกด 1 ครั้ง
+    let currentlyVisibleRows = 0; // ตัวแปรเก็บจำนวนแถวที่แสดงอยู่ปัจจุบัน
 
-    // --- Data ---
-    const localStorageKey = 'surveySubmissions'; // Key for localStorage
+    // --- Questions Data ---
     const questions = [
-        "1. สถานที่ การจัดประชุม",
-        "2. อุณหภูมิ และการถ่ายเทอากาศในห้องประชุม",
-        "3. แสงสว่าง เสียง เวที ป้าย",
-        "4. อาหารกลางวัน",
-        "5. อาหารว่าง",
-        "6. การติดต่อประสานงานของผู้จัดการประชุม",
-        "7. เอกสารประกอบการประชุมมีประโยชน์",
-        "8. หัวข้อการบรรยาย มีสาระ มีความรู้ สามารถนำไปใช้ได้",
-        "9. วิทยากรผู้บรรยายของมีความรู้",
-        "10. เวลาที่ใช้บรรยายของวิทยากร ตรงเวลา เหมาะสม",
-        "11. ผู้ประชุม มีโอกาสได้แลกเปลี่ยนความรู้ประสบการณ์",
-        "12. ประโยชน์ที่ได้รับจากวิทยากรโดยรวม",
+        "1. สถานที่ การจัดประชุม", "2. อุณหภูมิ และการถ่ายเทอากาศในห้องประชุม", "3. แสงสว่าง เสียง เวที ป้าย",
+        "4. อาหารกลางวัน", "5. อาหารว่าง", "6. การติดต่อประสานงานของผู้จัดการประชุม",
+        "7. เอกสารประกอบการประชุมมีประโยชน์", "8. หัวข้อการบรรยาย มีสาระ มีความรู้ สามารถนำไปใช้ได้",
+        "9. วิทยากรผู้บรรยายของมีความรู้", "10. เวลาที่ใช้บรรยายของวิทยากร ตรงเวลา เหมาะสม",
+        "11. ผู้ประชุม มีโอกาสได้แลกเปลี่ยนความรู้ประสบการณ์", "12. ประโยชน์ที่ได้รับจากวิทยากรโดยรวม",
         "13. ผู้ดำเนินรายการ (พิธีกร) มีความรู้ ความเข้าใจในการดำเนินการประชุม",
         "14. คณะกรรมการสมาคม มีอัธยาศัย มีมิตรไมตรี เป็นกันเอง สุภาพ อ่อนโยนกับผู้เข้าร่วมประชุม",
         "15. ผู้เข้าประชุมประทับใจกระบวนการจัดประชุม / สัมมนา",
@@ -36,108 +37,148 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Functions ---
 
-    // Load data from localStorage
     function loadSubmissions() {
         const submissions = localStorage.getItem(localStorageKey);
         return submissions ? JSON.parse(submissions) : [];
     }
 
-    // Save data to localStorage
     function saveSubmissions(submissions) {
         localStorage.setItem(localStorageKey, JSON.stringify(submissions));
     }
 
-    // Generate form questions dynamically
     function generateFormQuestions() {
         const formTbody = surveyForm.querySelector('tbody');
-        formTbody.innerHTML = ''; // Clear existing questions
+        formTbody.innerHTML = '';
         questions.forEach((q, index) => {
             const row = formTbody.insertRow();
             const qCell = row.insertCell();
             qCell.textContent = q;
-            qCell.style.fontWeight = '500'; // Make question text slightly bolder
-
+            qCell.style.fontWeight = '500';
             ratingLevels.forEach(level => {
                 const cell = row.insertCell();
-                const radioId = `q${index + 1}_${level.replace(/\s+/g, '')}`; // Unique ID for label
+                const radioId = `q${index + 1}_${level.replace(/\s+/g, '')}`;
                 const radio = document.createElement('input');
                 radio.type = 'radio';
-                radio.name = `q${index + 1}`; // Group radios by question (q1, q2, ...)
+                radio.name = `q${index + 1}`;
                 radio.value = level;
-                radio.required = true; // Make selection mandatory for each question
+                radio.required = true;
                 radio.id = radioId;
-
                 const label = document.createElement('label');
-                label.htmlFor = radioId; // Link label to radio button
-                // Optional: Add text to label if needed visually, e.g., label.textContent = level;
-                label.style.cursor = 'pointer'; // Make label look clickable
-                label.appendChild(radio); // Put radio inside label for better click area
-
+                label.htmlFor = radioId;
+                label.style.cursor = 'pointer';
+                label.appendChild(radio);
                 cell.appendChild(label);
             });
         });
     }
 
-    // Generate results table header dynamically
     function generateResultsHeader() {
-         resultsTableHead.innerHTML = ''; // Clear existing header
-         const headerRow = resultsTableHead.insertRow();
-         const thForm = document.createElement('th');
-         thForm.textContent = 'ลำดับ'; // Changed label to 'ลำดับ'
-         thForm.style.width = '5%'; // Allocate small width for index
-         headerRow.appendChild(thForm);
-
-         questions.forEach((q, index) => {
-             const th = document.createElement('th');
-             // Extract question number and text for better display
-             const questionParts = q.match(/^(\d+)\.\s*(.*)/);
-             th.textContent = `ข้อ ${questionParts ? questionParts[1] : index + 1}`; // Use extracted number or index+1
-             th.title = questionParts ? questionParts[2] : q; // Show full question text on hover
-             headerRow.appendChild(th);
-         });
-    }
-
-    // Toggle visibility of results table and 'no results' message
-    function toggleResultsDisplay(hasData) {
-        if (hasData) {
-            resultsTable.classList.remove('hidden');
-            noResultsMessage.classList.add('hidden');
-        } else {
-            resultsTable.classList.add('hidden');
-            noResultsMessage.classList.remove('hidden');
-        }
-    }
-
-    // Render the results table
-    function renderResultsTable() {
-        const submissions = loadSubmissions();
-        resultsTbody.innerHTML = ''; // Clear existing rows
-        generateResultsHeader(); // Regenerate header (important if questions change)
-
-        toggleResultsDisplay(submissions.length > 0); // Show/hide table based on data
-
-        submissions.forEach((submission, index) => {
-            const row = resultsTbody.insertRow();
-            const cellIndex = row.insertCell();
-            cellIndex.textContent = index + 1; // Form number (1-based)
-            cellIndex.style.textAlign = 'center';
-
-            questions.forEach((q, qIndex) => {
-                const cell = row.insertCell();
-                const answer = submission[`q${qIndex + 1}`] || '-'; // Get answer for q1, q2... or show '-'
-                cell.textContent = answer;
-                cell.style.textAlign = 'center'; // Center align answers
-            });
+        resultsTableHead.innerHTML = '';
+        const headerRow = resultsTableHead.insertRow();
+        const thForm = document.createElement('th');
+        thForm.textContent = 'ลำดับ';
+        thForm.style.width = '5%';
+        headerRow.appendChild(thForm);
+        questions.forEach((q, index) => {
+            const th = document.createElement('th');
+            const questionParts = q.match(/^(\d+)\.\s*(.*)/);
+            th.textContent = `ข้อ ${questionParts ? questionParts[1] : index + 1}`;
+            th.title = questionParts ? questionParts[2] : q;
+            headerRow.appendChild(th);
         });
     }
 
-    // Calculate and render summary statistics
+    // --- Update More/Less Button Visibility ---
+    function updateMoreLessButtons() {
+        const allRows = resultsTbody.querySelectorAll('tr');
+        const totalRows = allRows.length;
+        // const buttonContainer = seeMoreBtn.parentElement; // ไม่ต้องควบคุม container จากตรงนี้แล้ว
+
+        // *** ตรวจสอบก่อนว่าปุ่มมีจริงหรือไม่ ***
+        if (!seeMoreBtn || !seeLessBtn) {
+             console.warn("More/Less buttons not found"); // แจ้งเตือนถ้าหาปุ่มไม่เจอ
+             return;
+        }
+
+        // Hide/Show More button
+        if (currentlyVisibleRows < totalRows) {
+            seeMoreBtn.style.display = 'inline-block';
+        } else {
+            seeMoreBtn.style.display = 'none';
+        }
+
+        // Hide/Show Less button
+        // แสดงปุ่ม Less ต่อเมื่อแถวที่แสดงอยู่ > จำนวนแถวเริ่มต้น
+        if (currentlyVisibleRows > rowsPerLoad) {
+            seeLessBtn.style.display = 'inline-block';
+        } else {
+            seeLessBtn.style.display = 'none';
+        }
+    }
+
+    // --- Render the results table (Corrected version for More/Less) ---
+    function renderResultsTable() {
+        const submissions = loadSubmissions();
+        resultsTbody.innerHTML = ''; // Clear existing rows before adding new ones
+        // generateResultsHeader(); // Header is generated once on load now
+
+        // Populate all rows first
+        submissions.forEach((submission, index) => {
+            const row = resultsTbody.insertRow();
+            row.style.display = 'none'; // ***สำคัญ: ซ่อนแถวไว้ก่อน***
+            const cellIndex = row.insertCell();
+            cellIndex.textContent = index + 1;
+            cellIndex.style.textAlign = 'center';
+            questions.forEach((q, qIndex) => {
+                const cell = row.insertCell();
+                const answer = submission[`q${qIndex + 1}`] || '-';
+                cell.textContent = answer;
+                cell.style.textAlign = 'center';
+            });
+        });
+
+        const allRows = resultsTbody.querySelectorAll('tr');
+        const totalRows = allRows.length;
+
+        // Determine and show initial rows
+        const initialToShow = Math.min(rowsPerLoad, totalRows);
+        for (let i = 0; i < initialToShow; i++) {
+            if (allRows[i]) {
+                allRows[i].style.display = ''; // ***สำคัญ: แสดงแถวเริ่มต้น***
+            }
+        }
+        currentlyVisibleRows = initialToShow; // ***สำคัญ: ตั้งค่าจำนวนแถวที่แสดง***
+
+        // Update visibility of table/message and buttons
+        toggleResultsDisplay(totalRows > 0);
+        updateMoreLessButtons(); // ***สำคัญ: อัปเดตสถานะปุ่ม***
+    }
+
+    function toggleResultsDisplay(hasData) {
+        const tableContainerDiv = resultsTable.parentElement; // The div with overflow-x
+        // *** เพิ่มการตรวจสอบว่าหา Container เจอ ***
+        if (!tableContainerDiv) {
+             console.error("Table container div not found!");
+             return;
+        }
+
+        if (hasData) {
+            tableContainerDiv.style.display = 'block'; // Show the container div (contains table AND buttons)
+            resultsTable.style.display = 'table';    // Show table specifically
+            noResultsMessage.classList.add('hidden');
+        } else {
+            tableContainerDiv.style.display = 'none'; // Hide container if no data
+            resultsTable.style.display = 'none';    // Hide table specifically
+            noResultsMessage.classList.remove('hidden');
+        }
+         // การเรียก updateMoreLessButtons() ตรงนี้ยังถูกต้องอยู่
+        updateMoreLessButtons();
+    }
     function renderSummary() {
         const submissions = loadSubmissions();
         const total = submissions.length;
         totalFormsSpan.textContent = total;
-
-        summaryDetailsDiv.innerHTML = ''; // Clear previous summary
+        summaryDetailsDiv.innerHTML = '';
 
         if (total === 0) {
             summaryDetailsDiv.textContent = 'ยังไม่มีข้อมูลสำหรับสรุปผล';
@@ -146,54 +187,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
         questions.forEach((q, index) => {
             const qKey = `q${index + 1}`;
-            const counts = {}; // Use object for flexibility
-            ratingLevels.forEach(level => counts[level] = 0); // Initialize counts for all levels
-
+            const counts = {};
+            ratingLevels.forEach(level => counts[level] = 0);
             submissions.forEach(submission => {
                 const answer = submission[qKey];
                 if (answer && counts.hasOwnProperty(answer)) {
                     counts[answer]++;
                 }
             });
-
             const questionSummaryDiv = document.createElement('div');
             const questionTitle = document.createElement('strong');
-             // Extract question number and text for better display
-             const questionParts = q.match(/^(\d+)\.\s*(.*)/);
-            questionTitle.textContent = `${questionParts ? questionParts[1] : index + 1}. ${questionParts ? questionParts[2] : q}`; // Display question number and text
+            const questionParts = q.match(/^(\d+)\.\s*(.*)/);
+            questionTitle.textContent = `${questionParts ? questionParts[1] : index + 1}. ${questionParts ? questionParts[2] : q}`;
             questionSummaryDiv.appendChild(questionTitle);
-
             ratingLevels.forEach(level => {
-                 const countSpan = document.createElement('span');
-                 countSpan.textContent = `${level}: ${counts[level]} คน`;
-                 questionSummaryDiv.appendChild(countSpan);
+                const countSpan = document.createElement('span');
+                countSpan.textContent = `${level}: ${counts[level]} คน`;
+                questionSummaryDiv.appendChild(countSpan);
             });
-
             summaryDetailsDiv.appendChild(questionSummaryDiv);
         });
     }
 
     // --- Event Listeners ---
 
-    // Show form when "New Survey" is clicked
     newSurveyBtn.addEventListener('click', () => {
-        surveyForm.reset(); // Clear previous selections
-        generateFormQuestions(); // Ensure form is correctly generated
+        surveyForm.reset();
+        generateFormQuestions();
         surveyFormContainer.classList.remove('hidden');
-        window.scrollTo(0, surveyFormContainer.offsetTop - 20); // Scroll to the form
-        // Optional: Hide the "New Survey" button while form is shown
-        // newSurveyBtn.classList.add('hidden');
+        window.scrollTo({ top: surveyFormContainer.offsetTop - 20, behavior: 'smooth' });
     });
 
-    // Handle form submission
     surveyForm.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent default page reload
-
+        event.preventDefault();
         const formData = new FormData(surveyForm);
         const submission = {};
         let allAnswered = true;
-
-        // Validate if all questions are answered and collect data
         for (let i = 0; i < questions.length; i++) {
             const qKey = `q${i + 1}`;
             const answer = formData.get(qKey);
@@ -202,61 +231,87 @@ document.addEventListener('DOMContentLoaded', () => {
                 const questionParts = questions[i].match(/^(\d+)\.\s*(.*)/);
                 const questionNumber = questionParts ? questionParts[1] : i + 1;
                 alert(`กรุณาตอบคำถามข้อ ${questionNumber}`);
-                // Find the first radio button of the unanswered question to focus
                 const firstRadioOfQuestion = surveyForm.querySelector(`input[name="${qKey}"]`);
-                 if(firstRadioOfQuestion) {
-                     // Scroll to the question and focus
-                     firstRadioOfQuestion.closest('tr').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                     firstRadioOfQuestion.focus();
-                 }
-                break; // Stop checking after the first missing answer
+                if (firstRadioOfQuestion) {
+                    firstRadioOfQuestion.closest('tr').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstRadioOfQuestion.focus();
+                }
+                break;
             }
             submission[qKey] = answer;
         }
-
         if (allAnswered) {
             const submissions = loadSubmissions();
             submissions.push(submission);
             saveSubmissions(submissions);
-
-            renderResultsTable();
+            renderResultsTable(); // Re-render table which handles More/Less state
             renderSummary();
-
-            surveyFormContainer.classList.add('hidden'); // Hide form after submission
-            // Optional: Show the "New Survey" button again if it was hidden
-            // newSurveyBtn.classList.remove('hidden');
-            window.scrollTo(0, resultsContainer.offsetTop - 20); // Scroll to results
-            alert('บันทึกข้อมูลเรียบร้อยแล้ว');
+            surveyFormContainer.classList.add('hidden');
+            window.scrollTo({ top: resultsContainer.offsetTop - 20, behavior: 'smooth' });
         }
     });
 
-    // Handle cancel button click
+    // *** Listener ของ cancelBtn และ clearAllBtn มีแค่ชุดเดียวพอ ***
     cancelBtn.addEventListener('click', () => {
-         surveyFormContainer.classList.add('hidden');
-         // Optional: Show the "New Survey" button again if it was hidden
-         // newSurveyBtn.classList.remove('hidden');
+        surveyFormContainer.classList.add('hidden');
     });
 
-    // Handle Clear All button click
     clearAllBtn.addEventListener('click', () => {
-        // Ask for confirmation before deleting
         const isConfirmed = confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลที่บันทึกไว้ทั้งหมด? ข้อมูลจะหายไปอย่างถาวรและไม่สามารถกู้คืนได้');
-
         if (isConfirmed) {
-            // Remove data from localStorage
             localStorage.removeItem(localStorageKey);
-
-            // Update the display (table and summary) to reflect the cleared data
-            renderResultsTable();
+            renderResultsTable(); // Re-render table which handles More/Less state
             renderSummary();
-
             alert('ข้อมูลทั้งหมดถูกลบเรียบร้อยแล้ว');
         }
     });
 
+    // --- More Button Event Listener ---
+    seeMoreBtn.addEventListener('click', () => {
+        const allRows = resultsTbody.querySelectorAll('tr');
+        const totalRows = allRows.length;
+        // Prevent showing more than available
+        const newVisibleCount = Math.min(currentlyVisibleRows + rowsPerLoad, totalRows);
+
+        for (let i = currentlyVisibleRows; i < newVisibleCount; i++) {
+             if (allRows[i]) {
+                allRows[i].style.display = ''; // Show row
+             }
+        }
+        currentlyVisibleRows = newVisibleCount;
+        updateMoreLessButtons();
+    });
+
+    // --- Less Button Event Listener ---
+    seeLessBtn.addEventListener('click', () => {
+        const allRows = resultsTbody.querySelectorAll('tr');
+        // Calculate new target count, minimum is initial load count
+        const newVisibleCount = Math.max(rowsPerLoad, currentlyVisibleRows - rowsPerLoad);
+
+        // Hide rows from the new target count up to the currently visible count
+        for (let i = newVisibleCount; i < currentlyVisibleRows; i++) {
+             if (allRows[i]) {
+                allRows[i].style.display = 'none'; // Hide row
+             }
+        }
+        currentlyVisibleRows = newVisibleCount; // Update the count
+        updateMoreLessButtons();
+    });
+
+    // --- Print Summary Button Event Listener (ใช้ window.print) ---
+    printSummaryBtn.addEventListener('click', () => {
+        const submissions = loadSubmissions();
+        if (submissions.length === 0) {
+            alert('ยังไม่มีข้อมูลสรุปผลให้พิมพ์');
+            return;
+        }
+        // สั่ง Print โดยตรง (ใช้ CSS @media print จัดการเนื้อหา)
+        window.print();
+    });
+
     // --- Initial Page Load ---
-    generateResultsHeader(); // Generate table header structure on load
-    renderResultsTable();   // Render table with any previously stored data
-    renderSummary();      // Render summary with any previously stored data
+    generateResultsHeader(); // Generate table header structure once on load
+    renderResultsTable();   // Render table and handle initial More/Less state
+    renderSummary();      // Render summary
 
 });

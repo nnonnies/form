@@ -65,8 +65,30 @@ button.danger {
 
 button.danger:hover {
     background-color: #bb2d3b;
+    
 }
-
+#seeMoreRecords {
+    background-color: #0b5ed7; /*ปุ่ม more*/
+    padding: 10px 20px; /* เพิ่ม padding ให้ปุ่มใหญ่ขึ้นเล็กน้อย */
+    color: white;
+    border: none;
+    border-radius: 5px; /* เพิ่มความโค้งมน */
+    cursor: pointer;
+    margin: 5px;
+    font-size: 1em;
+    transition: background-color 0.2s ease-in-out; /* เพิ่ม animation */
+}
+#seeLessRecords {
+    background-color: #727b88; /*ปุ่ม less*/
+    padding: 10px 20px; /* เพิ่ม padding ให้ปุ่มใหญ่ขึ้นเล็กน้อย */
+    color: white;
+    border: none;
+    border-radius: 5px; /* เพิ่มความโค้งมน */
+    cursor: pointer;
+    margin: 5px;
+    font-size: 1em;
+    transition: background-color 0.2s ease-in-out; /* เพิ่ม animation */
+}
 .hidden {
     display: none;
 }
@@ -198,3 +220,50 @@ input[type="radio"] {
      #results-container h2, #clear-all-btn { display: block; width: 100%; text-align: center; margin: 10px 0; } /* จัดปุ่มล้างให้อยู่กลาง */
      #results-table { font-size: 0.8em; } /* ลดขนาดฟอนต์ตารางผลลัพธ์อีก */
 }
+
+@media print {
+    /* ซ่อนทุกอย่างใน body ก่อน */
+    body * {
+      visibility: hidden;
+      margin: 0; /* อาจจะ reset margin/padding */
+      padding: 0;
+      box-shadow: none; /* เอาเงาออก */
+      border: none; /* เอาเส้นขอบออก */
+    }
+  
+    /* ทำให้ส่วนที่ต้องการพิมพ์และสิ่งที่อยู่ข้างในกลับมาแสดงผล */
+    #summary-container, #summary-container * {
+      visibility: visible;
+    }
+  
+    /* จัดตำแหน่งส่วนที่พิมพ์ให้อยู่บนสุด ซ้ายสุด ของหน้ากระดาษ */
+    #summary-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%; /* อาจจะกำหนดความกว้าง */
+      padding: 1cm; /* ใส่ padding แทน margin ของ body */
+      margin: 0;
+      border: none;
+      box-shadow: none;
+    }
+  
+    /* ซ่อนปุ่ม Print ในหน้าพิมพ์ */
+    #print-summary-btn {
+      display: none;
+    }
+  
+    /* อาจจะปรับสไตล์อื่นๆ เพิ่มเติมสำหรับหน้าพิมพ์ */
+    h2 {
+      text-align: left; /* อาจจะไม่อยากให้อยู่กลางในหน้าพิมพ์ */
+      margin-top: 0;
+    }
+    #summary-details div {
+       background-color: transparent; /* อาจจะไม่ต้องการพื้นหลังสีเทาใน PDF */
+       border-bottom: 1px solid #ccc; /* อาจจะใช้เส้นขอบบางๆ แทน */
+    }
+    a { /* ถ้ามีลิงก์ */
+       text-decoration: none;
+       color: black;
+    }
+  }
