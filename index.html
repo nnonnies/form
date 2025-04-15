@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แบบฟอร์มสำรวจความพึงพอใจ</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -48,13 +49,35 @@
         </div>
         <p id="no-results-message" class="hidden">ยังไม่มีข้อมูลที่บันทึกไว้</p> </div>
 
-    <div id="summary-container">
-        <h2>สรุปผลความพึงพอใจ</h2>
-        <button id="print-summary-btn">พิมพ์สรุป (PDF)</button>
-        <p>จำนวนผู้ตอบแบบฟอร์มทั้งหมด: <span id="total-forms">0</span> คน</p>
-        <div id="summary-details">
+        <div id="summary-container">
+            <button id="print-summary-btn">พิมพ์สรุป (PDF)</button>
+            <p>จำนวนผู้ตอบแบบฟอร์มทั้งหมด <span id="total-forms">0</span> คน</p>
+    
+            <div style="overflow-x:auto;"> <table id="summary-table">
+                    <thead>
+                        <tr> <th id="summary-title" contenteditable="true" style="text-align: center;" colspan="6">แบบประเมินความพอใจ AAR (After Action Review)</th></tr>
+                        <tr> <th id="summary-title" contenteditable="true" style="text-align: center;" colspan="6">ประชุมคณะกรรมการสมคมผู้ประกอบการร้านอาหาร และประชุมภาคีเครือข่ายผู้ประกอบการร้านอาหาร</th></tr>
+                        <tr> <th id="summary-title" contenteditable="true" style="text-align: center;" colspan="6">ครั้งที่ ๑/๒๕๖๘ (๑๗ จังหวัดภาคกลาง)</th></tr>
+                        <tr> <th id="summary-title" contenteditable="true" style="text-align: center;" colspan="6">วันที่ ๑๘-๑๙ มีนาคม ๒๕๖๘ ณ ห้องแกรนด์ คอนเวนชั่น โรงแรมทีเค พาเลซ แอนด์ คอนเวนชั่น กรุงเทพฯ</th></tr>
+                        <tr>
+                            <th>รายการ</th> <th>มากที่สุด</th>
+                            <th>มาก(1)</th>    <th>ปานกลาง(2)</th> <th>น้อยที่สุด(2)</th><th>รวมฉบับ</th> </tr>
+                    </thead>
+                    <tbody id="summary-tbody">
+                        </tbody>
+                </table>
             </div>
-    </div>
+            <p id="no-summary-message" class="hidden">ยังไม่มีข้อมูลสำหรับสรุปผล</p> </div>
+
+            <div id="pie-chart-container" class="chart-container page-break"> 
+                <h3 >แบบประเมินความพึงพอใจของผู้เข้าร่วมประชุม/สัมมนา</h3>
+                <canvas id="pieChartCanvas"></canvas>
+            </div>
+
+            <div id="stacked-chart-container" class="chart-container page-break"> 
+                <h3>แบบประเมินความพึงพอใจของผู้เข้าร่วมประชุม/สัมมนา</h3>
+                 <canvas id="stackedColumnChartCanvas"></canvas>
+            </div>
 
     <script src="script.js"></script>
 </body>

@@ -221,49 +221,254 @@ input[type="radio"] {
      #results-table { font-size: 0.8em; } /* ลดขนาดฟอนต์ตารางผลลัพธ์อีก */
 }
 
+/* --- Add Styles for Summary Table --- */
+#summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px; /* Add some space above the table */
+    font-size: 0.9em; /* Slightly smaller font for summary */
+}
+
+#summary-table th,
+#summary-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px 10px; /* Adjust padding */
+    vertical-align: middle;
+}
+
+#summary-table th {
+    background-color: #e9ecef;
+    text-align: center;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#summary-table td:first-child { /* Question column */
+    text-align: left;
+    width: auto; /* Let it adjust */
+    font-weight: 500;
+}
+
+#summary-table td:not(:first-child) { /* Count columns */
+    text-align: center;
+}
+
+#summary-table tbody tr:nth-child(odd) { /* Zebra striping for readability */
+    background-color: #f8f9fa;
+}
+#summary-table tbody tr:hover { /* Highlight row on hover */
+    background-color: #e9ecef;
+}
+
+
+/* --- Style for Editable Title Focus --- */
+#summary-title[contenteditable="true"] {
+    cursor: text; /* Indicate it's editable */
+    padding: 10px; /* Add some padding for better click area */
+    border: 1px dashed transparent; /* Subtle border */
+    border-radius: 4px;
+    font-size: 11pt;
+}
+
+#summary-title[contenteditable="true"]:focus {
+    outline: none; /* Remove default browser outline */
+    border: 1px dashed #0d6efd; /* Show a border when focused */
+    background-color: #eef; /* Light background when editing */
+}
+
+/* --- Hide/Show Summary Message --- */
+#no-summary-message {
+    text-align: center;
+    color: #6c757d;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+/* --- Style for Chart Containers (General) --- */
+.chart-container {
+    margin-top: 30px; /* Add space above charts */
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    /* Ensure container has some initial height/width or let canvas define it */
+     /* Optional: constrain max width on screen */
+}
+.chart-container h3 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #343a40;
+    font-size: 1.1em;
+}
+
+#pieChartCanvas{
+    width: 100%;
+    height: 300px;
+}
+/* --- Update @media print --- */
 @media print {
-    /* ซ่อนทุกอย่างใน body ก่อน */
+    body {
+      /* กำหนดขนาดกระดาษและ orientation ถ้าจำเป็น (แต่ปกติ user จะเลือกเอง) */
+      size: A4 portrait;
+    }
+
     body * {
       visibility: hidden;
-      margin: 0; /* อาจจะ reset margin/padding */
-      padding: 0;
-      box-shadow: none; /* เอาเงาออก */
-      border: none; /* เอาเส้นขอบออก */
+      margin: 0 !important; /* ใช้ !important เพื่อ override */
+      padding: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      /* --- ลดขนาด font พื้นฐานสำหรับพิมพ์ --- */
+      font-size: 9pt !important; /* ลดขนาดลงอีก ลองเริ่มที่ 9pt */
+      color: black !important; /* ทำให้เป็นสีดำทั้งหมด */
     }
-  
-    /* ทำให้ส่วนที่ต้องการพิมพ์และสิ่งที่อยู่ข้างในกลับมาแสดงผล */
+
     #summary-container, #summary-container * {
       visibility: visible;
     }
-  
-    /* จัดตำแหน่งส่วนที่พิมพ์ให้อยู่บนสุด ซ้ายสุด ของหน้ากระดาษ */
+    #summary-table, #summary-table * {
+      visibility: visible;
+    }
+
     #summary-container {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%; /* อาจจะกำหนดความกว้าง */
-      padding: 1cm; /* ใส่ padding แทน margin ของ body */
-      margin: 0;
-      border: none;
-      box-shadow: none;
+      /* position: absolute; อาจจะไม่จำเป็น ใช้ static ดีกว่า */
+      position: center; /* ให้เอกสารไหลตามปกติ */
+      width: 95%; /* ให้เต็มความกว้าง */
+      /* --- ลด Padding รอบนอก --- */
+      padding: 0.5cm !important; /* ลด padding ลง */
+      margin: 0 auto !important;
+      border: none !important;
+      box-shadow: none !important;
+      background-color: white !important;
     }
-  
-    /* ซ่อนปุ่ม Print ในหน้าพิมพ์ */
-    #print-summary-btn {
-      display: none;
+
+    /* ซ่อนส่วนที่ไม่ต้องการพิมพ์ */
+    #new-survey-btn, #results-container, #print-summary-btn,
+    #cancel-btn, #clear-all-btn, #seeMoreRecords, #seeLessRecords,
+    #no-results-message, #survey-form-container {
+        display: none !important;
+        visibility: hidden !important;
     }
-  
-    /* อาจจะปรับสไตล์อื่นๆ เพิ่มเติมสำหรับหน้าพิมพ์ */
-    h2 {
-      text-align: left; /* อาจจะไม่อยากให้อยู่กลางในหน้าพิมพ์ */
-      margin-top: 0;
+
+    #summary-title {
+      text-align: center;
+      /* --- ลด Margin และ Font Size ของหัวข้อ --- */
+      margin-bottom: 10px !important;
+      font-size: 11pt !important; /* ลดขนาดหัวข้อลงอีก */
+      font-weight: bold;
+      border: none !important;
+      background-color: transparent !important;
+      padding: 0 !important;
+      /* --- พยายามไม่ให้หัวข้อถูกตัดไปอยู่หน้าใหม่คนเดียว --- */
+      page-break-after: avoid !important;
     }
-    #summary-details div {
-       background-color: transparent; /* อาจจะไม่ต้องการพื้นหลังสีเทาใน PDF */
-       border-bottom: 1px solid #ccc; /* อาจจะใช้เส้นขอบบางๆ แทน */
+
+    #summary-container p,#total-forms { /* ยอดรวม */
+        visibility: hidden;
+        text-align: right;
+        font-size: 9pt !important; /* ใช้ขนาดเดียวกับเนื้อหา */
+        margin-bottom: 5px !important; /* ลด margin */
+        /* --- พยายามให้อยู่กับตาราง ไม่ขึ้นหน้าใหม่คนเดียว --- */
+        page-break-before: avoid !important;
     }
-    a { /* ถ้ามีลิงก์ */
-       text-decoration: none;
-       color: black;
+
+     /* Style for Summary Table Container on Print */
+     #summary-table-container {
+        page-break-before: auto; /* Default */
+        page-break-after: auto;  /* Default */
+        margin-bottom: 1cm; /* Add some space after the table before potential page break */
     }
-  }
+
+    #summary-table {
+      width: 100%;
+      border-collapse: collapse !important;
+      margin-top: 5px !important; /* ลด margin */
+      /* --- ลด Font Size ของตาราง --- */
+      font-size: 8pt !important; /* ลดขนาด font ในตาราง */
+      border: 1px solid #666 !important;
+       /* --- บอกเบราว์เซอร์ว่าอนุญาตให้ตัดหน้า *ระหว่าง* แถวได้ --- */
+      page-break-inside: auto !important;
+    }
+
+    #summary-table th,
+    #summary-table td {
+      border: 1px solid #ccc !important;
+      /* --- ลด Padding ภายในเซลล์ --- */
+      padding: 3px 4px !important; /* ลด padding ลงอีก */
+      text-align: center;
+      background-color: white !important;
+       /* --- พยายามไม่ให้ *เนื้อหาภายในเซลล์* ถูกตัดขึ้นหน้าใหม่ --- */
+      page-break-inside: avoid !important;
+      word-wrap: break-word; /* อนุญาตให้ตัดคำยาวๆ ในเซลล์ */
+    }
+
+     #summary-table td:first-child { /* คอลัมน์ชื่อคำถาม */
+         text-align: left !important;
+         /* อนุญาตให้ข้อความยาวๆ ตัดคำขึ้นบรรทัดใหม่ */
+         white-space: normal !important;
+     }
+
+     #summary-table th {
+        font-weight: bold;
+        background-color: #eee !important;
+        /* อนุญาตให้หัวตารางยาวๆ ตัดคำขึ้นบรรทัดใหม่ */
+        white-space: normal !important;
+     }
+
+    /* --- พยายามให้ทั้งแถวอยู่ด้วยกัน ไม่ถูกตัดกลางแถว --- */
+    #summary-table tr {
+        page-break-inside: avoid !important; /* สำคัญ: พยายามไม่ตัดกลางแถว */
+        page-break-after: auto !important;
+    }
+
+    .chart-container {
+        display: block !important; /* Ensure visible */
+        visibility: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-top: 1cm !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
+        page-break-before: always !important; /* Force start on new page */
+        page-break-inside: avoid !important; /* Keep chart content together */
+    }
+    .chart-container h3 {
+        display: block !important; /* Ensure visible */
+        visibility: visible !important;
+        text-align: center !important;
+        font-size: 10pt !important;
+        margin-bottom: 5mm !important;
+        font-weight: bold !important;
+    }
+     /* Ensure canvas itself is visible */
+     .chart-container #pieChartCanvas{
+         display: block !important;
+         visibility: visible !important;
+         max-width: 60%; /* Prevent exceeding container */
+         height: auto !important; /* Let aspect ratio work */
+         background-color: white !important; /* Ensure canvas has white background */
+         margin: 0 auto !important;
+         padding: 0 !important;
+         border: none !important;
+         box-shadow: none !important;
+         page-break-inside: avoid !important;
+         
+     }
+
+     .chart-container #stackedColumnChartCanvas {
+        display: block !important;
+        visibility: visible !important;
+        max-width: 100%; /* Prevent exceeding container */
+        height: auto !important; /* Let aspect ratio work */
+        background-color: white !important; /* Ensure canvas has white background */
+        margin: 0 auto !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+        
+    }
+}
